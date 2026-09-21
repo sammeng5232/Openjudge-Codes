@@ -1,0 +1,46 @@
+数据结构与算法(Python语言实现)教材题库
+P0310:汉诺塔问题
+总时间限制: 1000ms 内存限制: 65536kB
+描述
+古代有一个梵塔，塔内有三个座A、B、C，A座上有n个盘子，盘子大小不等，大的在下，小的在上。三个座都可以用来放盘子。有一个和尚想把这n个盘子从A座移到C座，但每次只能允许移动一个盘子，并且在移动过程中，3个座上的盘子始终保持大盘在下，小盘在上。输入盘子数目n，要求输出移动的步骤。
+
+输入
+盘子数目n ( n < 8)
+输出
+移动方案
+样例输入
+3
+样例输出
+A->C
+A->B
+C->B
+A->C
+B->A
+B->C 
+A->C
+
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef vector<int> vi;
+typedef stack<int> si;
+
+int n;
+
+void Hanoi(int n, char c1, char c2, char c3) {
+  if (n == 1) {
+    cout << c1 << "->" << c3 << "\n";
+    return;
+  }
+  Hanoi(n - 1, c1, c3, c2);
+  cout << c1 << "->" << c3 << "\n";
+  Hanoi(n - 1, c2, c1, c3);
+  return;
+}
+
+int main() {
+  cin >> n;
+  Hanoi(n, 'A', 'B', 'C');
+  return 0;
+}

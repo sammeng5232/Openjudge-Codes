@@ -1,0 +1,44 @@
+百练-3708:1的个数
+
+总时间限制: 1000ms 内存限制: 65536kB
+描述
+给定一个十进制整数N，求其对应2进制数中1的个数
+输入
+第一个整数表示有N组测试数据，其后N行是对应的测试数据，每行为一个整数。
+输出
+N行，每行输出对应一个输入。
+样例输入
+4
+2
+100
+1000
+66
+样例输出
+1
+3
+6
+2
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+
+int f(int k) {
+  int cnt = 0;
+  while (k) {
+    k &= k - 1;
+    cnt++;
+  }
+  return cnt;
+}
+
+int main() {
+  cin >> n;
+  for (int i = 0; i < n; i++) {
+    int m;
+    cin >> m;
+    cout << f(m) << "\n";
+  }
+  return 0;
+}

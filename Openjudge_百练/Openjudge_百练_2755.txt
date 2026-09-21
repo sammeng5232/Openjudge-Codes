@@ -1,0 +1,87 @@
+百练-2755:神奇的口袋
+
+总时间限制: 10000ms 内存限制: 65536kB
+描述
+有一个神奇的口袋，总的容积是40，用这个口袋可以变出一些物品，这些物品的总体积必须是40。John现在有n个想要得到的物品，每个物品的体积分别是a1，a2……an。John可以从这些物品中选择一些，如果选出的物体的总体积是40，那么利用这个神奇的口袋，John就可以得到这些物品。现在的问题是，John有多少种不同的选择物品的方式。
+输入
+输入的第一行是正整数n (1 <= n <= 20)，表示不同的物品的数目。接下来的n行，每行有一个1到40之间的正整数，分别给出a1，a2……an的值。
+输出
+输出不同的选择物品的方式的数目。
+样例输入
+3
+20
+20
+20
+样例输出
+3
+
+Code 1:
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+  int n;
+  cin >> n;
+  int a[20];
+  int c;
+  int s = 0;
+  for (int i = 0; i < n; i++)
+    cin >> a[i];
+  for (int i = 0; i < (1 << n); i++) {
+    c = 0;
+    for (int j = 1 << (n - 1), k = n - 1; j > 0; j /= 2, k--)
+      if ((i & j))
+        c += a[k];
+    if (c == 40)
+      s++;
+  }
+  cout << s << "\n";
+  return 0;
+}
+
+Code 2:
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, a[20];
+
+int f(int w, int k) { // number of ways to choose from the first k items with
+                      // the sum of weights being w
+  if (w == 0)
+    return 1;
+  if (k == 0)
+    return 0;
+  if (w < 0)
+    return 0;
+  return f(w, k - 1) + f(w - a[k - 1], k - 1);
+}
+
+int main() {
+  cin >> n;
+  for (int i = 0; i < n; i++)
+    cin >> a[i];
+  cout << f(40, n) << "\n";
+  return 0;
+}
+
+Code 3:
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, a[20], f[41][21];
+
+int main() {
+  cin >> n;
+  for (int i = 0; i < n; i++) {
+    cin >> a[i];
+    f[0][i] = 1;
+  }
+  for (int w = 1; w <= 40; w++)
+    for (int k = 1; k <= n; k++) {
+      f[w][k] = f[w][k - 1];
+      if (w - a[k - 1] >= 0)
+        f[w][k] += f[w - a[k - 1]][k - 1];
+    }
+  cout << f[40][n] << "\n";
+  return 0;
+}

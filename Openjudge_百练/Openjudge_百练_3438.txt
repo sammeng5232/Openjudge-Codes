@@ -1,0 +1,102 @@
+百练-3438:Balanced Lineup
+
+总时间限制: 5000ms 单个测试点时间限制: 2000ms 内存限制: 65536kB
+描述
+For the daily milking, Farmer John's N cows (1 ≤ N ≤ 50,000) always line up in the same order. One day Farmer John decides to organize a game of Ultimate Frisbee with some of the cows. To keep things simple, he will take a contiguous range of cows from the milking lineup to play the game. However, for all the cows to have fun they should not differ too much in height.
+
+Farmer John has made a list of Q (1 ≤ Q ≤ 200,000) potential groups of cows and their heights (1 ≤ height ≤ 1,000,000). For each group, he wants your help to determine the difference in height between the shortest and the tallest cow in the group.
+
+输入
+Line 1: Two space-separated integers, N and Q.
+Lines 2..N+1: Line i+1 contains a single integer that is the height of cow i
+Lines N+2..N+Q+1: Two integers A and B (1 ≤ A ≤ B ≤ N), representing the range of cows from A to B inclusive.
+输出
+Lines 1..Q: Each line contains a single integer that is a response to a reply and indicates the difference in height between the tallest and shortest cow in the range.
+样例输入
+6 3
+1
+7
+3
+4
+2
+5
+1 5
+4 6
+2 2
+样例输出
+6
+3
+0
+
+#include <bits/stdc++.h>
+using namespace std;
+
+const int inf = 2000001;
+int minv = inf, maxv = -inf;
+
+struct Node {
+  int l, r;
+  int minv, maxv;
+  int mid() { return l + (r - l) / 2; }
+} tr[800001];
+
+void build(int rt, int l, int r) {
+  tr[rt].l = l;
+  tr[rt].r = r;
+  tr[rt].minv = inf;
+  tr[rt].maxv = -inf;
+  if (l < r) {
+    build(2 * rt + 1, l, l + (r - l) / 2);
+    build(2 * rt + 2, l + (r - l) / 2 + 1, r);
+  }
+}
+
+void insert(int rt, int i, int v) {
+  if (tr[rt].l == tr[rt].r) {
+    tr[rt].minv = tr[rt].maxv = v;
+    return;
+  }
+  tr[rt].minv = min(tr[rt].minv, v);
+  tr[rt].maxv = max(tr[rt].maxv, v);
+  if (i <= tr[rt].mid())
+    insert(2 * rt + 1, i, v);
+  else
+    insert(2 * rt + 2, i, v);
+}
+
+void query(int rt, int s, int e) {
+  if (tr[rt].minv >= minv && tr[rt].maxv <= maxv)
+    return;
+  if (tr[rt].l == s && tr[rt].r == e) {
+    minv = min(minv, tr[rt].minv);
+    maxv = max(maxv, tr[rt].maxv);
+    return;
+  }
+  if (e <= tr[rt].mid())
+    query(2 * rt + 1, s, e);
+  else if (s > tr[rt].mid())
+    query(2 * rt + 2, s, e);
+  else {
+    query(2 * rt + 1, s, tr[rt].mid());
+    query(2 * rt + 2, tr[rt].mid() + 1, e);
+  }
+}
+
+int main() {
+  int n, q, h;
+  cin >> n >> q;
+  build(0, 1, n);
+  for (int i = 1; i <= n; i++) {
+    cin >> h;
+    insert(0, i, h);
+  }
+  for (int i = 0; i < q; i++) {
+    int s, e;
+    cin >> s >> e;
+    minv = inf;
+    maxv = -inf;
+    query(0, s, e);
+    cout << maxv - minv << "\n";
+  }
+  return 0;
+}

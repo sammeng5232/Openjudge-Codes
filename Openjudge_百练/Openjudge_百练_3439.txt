@@ -1,0 +1,126 @@
+百练-3439:A Simple Problem with Integers
+
+总时间限制: 5000ms 单个测试点时间限制: 2000ms 内存限制: 65536kB
+描述
+You have N integers, A1, A2, ... , AN. You need to deal with two kinds of operations. One type of operation is to add some given number to each number in a given interval. The other is to ask for the sum of numbers in a given interval.
+
+输入
+The first line contains two numbers N and Q. 1 ≤ N,Q ≤ 100000.
+The second line contains N numbers, the initial values of A1, A2, ... , AN. -1000000000 ≤ Ai ≤ 1000000000.
+Each of the next Q lines represents an operation.
+"C a b c" means adding c to each of Aa, Aa+1, ... , Ab. -10000 ≤ c ≤ 10000.
+"Q a b" means querying the sum of Aa, Aa+1, ... , Ab.
+
+输出
+You need to answer all Q commands in order. One answer in a line.
+
+样例输入
+10 5
+1 2 3 4 5 6 7 8 9 10
+Q 4 4
+Q 1 10
+Q 2 4
+C 3 6 3
+Q 2 4
+样例输出
+4
+55
+9
+15
+提示
+The sums may exceed the range of 32-bit integers.
+
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+struct Node {
+  int l, r;
+  Node *pl, *pr;
+  ll sum, inc;
+  int mid() { return l + (r - l) / 2; }
+} tr[200001];
+
+int cnt = 0;
+
+void build(Node *prt, int l, int r) {
+  prt->l = l;
+  prt->r = r;
+  prt->sum = 0;
+  prt->inc = 0;
+  if (l < r) {
+    cnt++;
+    prt->pl = tr + cnt;
+    cnt++;
+    prt->pr = tr + cnt;
+    build(prt->pl, l, l + (r - l) / 2);
+    build(prt->pr, l + (r - l) / 2 + 1, r);
+  } else
+    return;
+}
+
+void insert(Node *prt, int i, int v) {
+  if (prt->l == i && prt->r == i) {
+    prt->sum = v;
+    return;
+  }
+  prt->sum += v;
+  if (i <= prt->mid())
+    insert(prt->pl, i, v);
+  else
+    insert(prt->pr, i, v);
+}
+
+void add(Node *prt, int a, int b, ll c) {
+  if (prt->l == a && prt->r == b) {
+    prt->inc += c;
+    return;
+  }
+  prt->sum += c * (b - a + 1);
+  if (b <= prt->l + (prt->r - prt->l) / 2)
+    add(prt->pl, a, b, c);
+  else if (a >= prt->l + (prt->r - prt->l) / 2 + 1)
+    add(prt->pr, a, b, c);
+  else {
+    add(prt->pl, a, prt->l + (prt->r - prt->l) / 2, c);
+    add(prt->pr, prt->l + (prt->r - prt->l) / 2 + 1, b, c);
+  }
+}
+
+ll query(Node *prt, int a, int b) {
+  if (prt->l == a && prt->r == b)
+    return prt->sum + (prt->r - prt->l + 1) * prt->inc;
+  prt->sum += (prt->r - prt->l + 1) * prt->inc;
+  prt->pl->inc += prt->inc;
+  prt->pr->inc += prt->inc;
+  prt->inc = 0;
+  if (b <= prt->mid())
+    return query(prt->pl, a, b);
+  else if (a >= prt->mid() + 1)
+    return query(prt->pr, a, b);
+  else
+    return query(prt->pl, a, prt->mid()) + query(prt->pr, prt->mid() + 1, b);
+}
+
+int main() {
+  int n, q, a, b, c;
+  char cd[1];
+  scanf("%d%d", &n, &q);
+  cnt = 0;
+  build(tr, 1, n);
+  for (int i = 1; i <= n; i++) {
+    scanf("%d", &a);
+    insert(tr, i, a);
+  }
+  for (int i = 0; i < q; i++) {
+    scanf("%s", cd);
+    if (cd[0] == 'C') {
+      scanf("%d%d%d", &a, &b, &c);
+      add(tr, a, b, c);
+    } else {
+      scanf("%d%d", &a, &b);
+      printf("%lld\n", query(tr, a, b));
+    }
+  }
+  return 0;
+}

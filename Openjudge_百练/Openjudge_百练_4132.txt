@@ -1,0 +1,109 @@
+百练
+4132:四则运算表达式求值
+总时间限制: 1000ms 内存限制: 65536kB
+描述
+求一个可以带括号的小学算术四则运算表达式的值
+
+输入
+一行，一个四则运算表达式。'*'表示乘法，'/'表示除法
+输出
+一行，该表达式的值，保留小数点后面两位
+样例输入
+输入样例1：
+3.4
+输入样例2:
+7+8.3
+输入样例3:
+3+4.5*(7+2)*(3)*((3+4)*(2+3.5)/(4+5))-34*(7-(2+3))
+样例输出
+输出样例1:
+3.40
+输出样例2:
+15.30
+输出样例3：
+454.75
+
+来源
+Guo Wei
+
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef vector<double> vi;
+typedef stack<double> si;
+
+double f1();
+double f2();
+double f3();
+
+double f1() {
+  double rs = f2();
+  while (1) {
+    char op = cin.peek();
+    if (op == '+') {
+      cin.get();
+      double val = f2();
+      rs += val;
+    } else if (op == '-') {
+      cin.get();
+      double val = f2();
+      rs -= val;
+    } else
+      break;
+  }
+  return rs;
+}
+
+double f2() {
+  double rs = f3();
+  while (1) {
+    char op = cin.peek();
+    if (op == '*') {
+      cin.get();
+      double val = f3();
+      rs *= val;
+    } else if (op == '/') {
+      cin.get();
+      double val = f3();
+      rs /= val;
+    } else
+      break;
+  }
+  return rs;
+}
+
+double f3() {
+  double rs = 0;
+  char c = cin.peek();
+  if (c == '(') {
+    cin.get();
+    rs = f1();
+    cin.get();
+  } else {
+    while (isdigit(c)) {
+      rs = rs * 10 + c - '0';
+      cin.get();
+      c = cin.peek();
+    }
+    if (c == '.') {
+      double val = 0;
+      double base = 0.1;
+      cin.get();
+      c = cin.peek();
+      while (isdigit(c)) {
+        cin.get();
+        val += (c - '0') * base;
+        c = cin.peek();
+        base *= 0.1;
+      }
+      rs += val;
+    }
+  }
+  return rs;
+}
+
+int main() {
+  printf("%.2lf\n", f1());
+  return 0;
+}

@@ -1,0 +1,62 @@
+百练-4001:抓住那头牛
+
+总时间限制: 2000ms 内存限制: 65536kB
+描述
+农夫知道一头牛的位置，想要抓住它。农夫和牛都位于数轴上，农夫起始位于点N(0<=N<=100000)，牛位于点K(0<=K<=100000)。农夫有两种移动方式：
+
+1、从X移动到X-1或X+1，每次移动花费一分钟
+2、从X移动到2*X，每次移动花费一分钟
+
+假设牛没有意识到农夫的行动，站在原地不动。农夫最少要花多少时间才能抓住牛？
+
+
+输入
+两个整数，N和K
+输出
+一个整数，农夫抓到牛所要花费的最小分钟数
+样例输入
+5 17
+样例输出
+4
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, k;
+bool visited[100002];
+
+struct pt {
+  int x;
+  int s;
+  pt(int x, int s) : x(x), s(s) {}
+};
+
+queue<pt> q;
+
+int main() {
+  cin >> n >> k;
+  q.push(pt(n, 0));
+  visited[n] = 1;
+  while (!q.empty()) {
+    pt p = q.front();
+    if (p.x == k) {
+      cout << p.s << "\n";
+      return 0;
+    } else {
+      if (p.x >= 1 && !visited[p.x - 1]) {
+        q.push(pt(p.x - 1, p.s + 1));
+        visited[p.x - 1] = 1;
+      }
+      if (p.x + 1 <= 100001 && !visited[p.x + 1]) {
+        q.push(pt(p.x + 1, p.s + 1));
+        visited[p.x + 1] = 1;
+      }
+      if (p.x * 2 <= 100001 && !visited[p.x * 2]) {
+        q.push(pt(p.x * 2, p.s + 1));
+        visited[p.x * 2] = 1;
+      }
+      q.pop();
+    }
+  }
+  return 0;
+}
